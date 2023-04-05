@@ -3,6 +3,7 @@ import InputBox from '../components/InputBox';
 import Link from 'next/link';
 import axios from 'axios';
 import { useRouter } from 'next/router';
+import { useAuthDispatch } from '@/context/auth';
 
 const Login = () => {
   let router = useRouter();
@@ -10,14 +11,17 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState<any>({});
 
+  const dispatch = useAuthDispatch();
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     try {
-      await axios.post(
+      const response = await axios.post(
         '/auth/login',
         { username, password },
         { withCredentials: true }, //로그인시 쿠키에 토큰발급허용
       );
+      dispatch('LOGIN', response.data?.user);
       router.push('/');
     } catch (error: any) {
       setErrors(error.response?.data || {});
