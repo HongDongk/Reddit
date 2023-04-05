@@ -1,28 +1,26 @@
+import React, { FormEvent, useState } from 'react';
+import InputBox from '../components/InputBox';
+import Link from 'next/link';
 import axios from 'axios';
 import { useRouter } from 'next/router';
-import React, { FormEvent, useState } from 'react';
-import Link from 'next/link';
-import InputBox from '../components/InputBox';
 
-const Register = () => {
-  const [email, setEmail] = useState('');
+const Login = () => {
+  let router = useRouter();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState<any>({});
-  let router = useRouter();
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     try {
-      await axios.post('/auth/register', {
-        email,
-        password,
-        username,
-      });
-      router.push('/login');
+      await axios.post(
+        '/auth/login',
+        { username, password },
+        { withCredentials: true }, //로그인시 쿠키에 토큰발급허용
+      );
+      router.push('/');
     } catch (error: any) {
-      console.log('error', error);
-      setErrors(error.response.data || {});
+      setErrors(error.response?.data || {});
     }
   };
 
@@ -30,16 +28,10 @@ const Register = () => {
     <div className="bg-white">
       <div className="flex flex-col items-center justify-center h-screen p-6">
         <div className="w-10/12 mx-auto md:w-96">
-          <h1 className="mb-2 text-lg font-bold text-center">SignUp</h1>
+          <h1 className="mb-2 text-lg font-bold text-center">Log In</h1>
           <form onSubmit={handleSubmit}>
             <InputBox
-              placeholder="Email"
-              value={email}
-              setValue={setEmail}
-              error={errors.email}
-            />
-            <InputBox
-              placeholder="UserName"
+              placeholder="Username"
               value={username}
               setValue={setUsername}
               error={errors.username}
@@ -51,13 +43,13 @@ const Register = () => {
               error={errors.password}
             />
             <button className="w-full py-2 mb-1 text-xs font-bold text-white uppercase bg-blue-400 border rounded">
-              Sign Up
+              Log In
             </button>
           </form>
           <small>
-            Already SignUp ?
-            <Link href="/login">
-              <span className="ml-3 text-blue-500 uppercase">LogIn</span>
+            No Id?
+            <Link href="/register">
+              <span className="ml-3 text-blue-500 uppercase">Sign Up</span>
             </Link>
           </small>
         </div>
@@ -66,4 +58,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default Login;
